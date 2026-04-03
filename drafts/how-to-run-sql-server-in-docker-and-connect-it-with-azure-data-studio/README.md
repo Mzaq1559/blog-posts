@@ -37,6 +37,12 @@ After running this command, SQL Server will be available at **localhost:1433**.
 
 ---
 
+**Docker SQL Server Container Running**
+
+![Docker SQL Server](images/image01)
+
+---
+
 ### 2. Connecting to SQL Server using Azure Data Studio
 
 Next, connect to the running SQL Server instance using Azure Data Studio.
@@ -58,6 +64,12 @@ Once connected, the SQL Server instance will appear in the **Connections panel**
 
 ---
 
+**Azure Data Studio Connection**
+
+![Azure Data Studio Connection](images/image02)
+
+---
+
 ### 3. Creating the Students Table
 
 After connecting to the database, run the following SQL query to create a table.
@@ -69,7 +81,6 @@ CREATE TABLE Students (
     Age INT,
     Department VARCHAR(100)
 );
-```
 
 **Explanation**
 
@@ -78,9 +89,7 @@ CREATE TABLE Students (
 - `Age` → Stores the student's age.
 - `Department` → Stores the department or program the student belongs to.
 
-The `PRIMARY KEY` ensures each student record has a unique ID.
-
----
+The `PRIMARY KEY` ensures each student record has a unique 
 
 ### 4. Verifying the Table
 
@@ -94,16 +103,11 @@ This query will display all records stored in the `Students` table.
 
 ---
 
-### Screenshots
-
-**Docker SQL Server Container Running**
-
-![Docker SQL Server](IMAGE_1)
-
-**Azure Data Studio Connection**
-
-![Azure Data Studio Connection](IMAGE_2)
-
 **Students Table Created**
 
-![Students Table](IMAGE_3)
+![Students Table](images/image03)
+![image01.png](./images/image01.png)
+
+![image02.png](./images/image02.png)
+
+![image03.png](./images/image03.png)
