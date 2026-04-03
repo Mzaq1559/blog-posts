@@ -4,6 +4,7 @@ slug: how-to-run-sql-server-in-docker-and-connect-it-with-azure-data-studio
 date: 2026-04-03
 tags: []
 category: "SQL Lab Series using Docker & Azure Data Studio"
+cover: ./images/cover.png
 ---
 
 ## Creating a Students Table using Docker SQL Server and Azure Data Studio
@@ -240,3 +241,4 @@ ORDER BY Age DESC;
 ## Conclusion
 
 In this exercise, we deployed **SQL Server using Docker**, connected it through **Azure Data Studio**, and performed several SQL operations including table creation, data insertion, querying, updating, deleting, and sorting records. This workflow demonstrates a practical development environment for learning and experimenting with SQL databases.
+![cover.png](./images/cover.png)
