@@ -8,7 +8,7 @@ excerpt: A brief overview of the current Tchnologies and Databases
 cover: ./images/cover.svg
 ---
 
-## Understanding Databases
+**## Understanding Databases**
 
 ### A Comprehensive Guide to the World of Data Storage
 
