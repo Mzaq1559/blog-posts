@@ -1,0 +1,54 @@
+<svg viewBox="0 0 820 260" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <rect width="820" height="260" fill="#f8fbff" rx="12"/>
+  <rect x="0" y="0" width="820" height="5" rx="2" fill="#1a3a5c"/>
+
+  <text x="410" y="32" text-anchor="middle" fill="#1a3a5c" font-size="15" font-weight="bold">OLTP vs OLAP: Two Worlds of Database Workloads</text>
+
+  <!-- VS divider -->
+  <circle cx="410" cy="148" r="28" fill="#1a3a5c"/>
+  <text x="410" y="154" text-anchor="middle" fill="white" font-size="14" font-weight="bold">VS</text>
+
+  <!-- OLTP Side -->
+  <rect x="20" y="50" width="365" height="190" rx="10" fill="white" stroke="#2e75b6" stroke-width="2"/>
+  <rect x="20" y="50" width="365" height="38" rx="10" fill="#2e75b6"/>
+  <rect x="20" y="74" width="365" height="14" fill="#2e75b6"/>
+  <text x="202" y="74" text-anchor="middle" fill="white" font-size="14" font-weight="bold">⚡ OLTP</text>
+  <text x="202" y="90" text-anchor="middle" fill="#d0e8ff" font-size="10">Online Transaction Processing</text>
+
+  <text x="40" y="115" fill="#333" font-size="11" font-weight="bold">Purpose:</text>
+  <text x="110" y="115" fill="#555" font-size="11">Day-to-day operations</text>
+  <text x="40" y="135" fill="#333" font-size="11" font-weight="bold">Query type:</text>
+  <text x="115" y="135" fill="#555" font-size="11">Simple, short, frequent</text>
+  <text x="40" y="155" fill="#333" font-size="11" font-weight="bold">Data volume:</text>
+  <text x="120" y="155" fill="#555" font-size="11">Thousands of rows</text>
+  <text x="40" y="175" fill="#333" font-size="11" font-weight="bold">Response time:</text>
+  <text x="128" y="175" fill="#555" font-size="11">Milliseconds</text>
+  <text x="40" y="195" fill="#333" font-size="11" font-weight="bold">Examples:</text>
+  <text x="105" y="195" fill="#555" font-size="11">Banking, e-commerce, ERP</text>
+  <text x="40" y="215" fill="#333" font-size="11" font-weight="bold">Databases:</text>
+  <text x="113" y="215" fill="#2e75b6" font-size="11">MySQL, PostgreSQL, SQL Server</text>
+  <rect x="30" y="225" width="345" height="8" rx="4" fill="#e8f4ff"/>
+  <text x="202" y="233" text-anchor="middle" fill="#2e75b6" font-size="9">INSERT a new order · UPDATE inventory · SELECT user profile</text>
+
+  <!-- OLAP Side -->
+  <rect x="435" y="50" width="365" height="190" rx="10" fill="white" stroke="#8e44ad" stroke-width="2"/>
+  <rect x="435" y="50" width="365" height="38" rx="10" fill="#8e44ad"/>
+  <rect x="435" y="74" width="365" height="14" fill="#8e44ad"/>
+  <text x="617" y="74" text-anchor="middle" fill="white" font-size="14" font-weight="bold">📊 OLAP</text>
+  <text x="617" y="90" text-anchor="middle" fill="#dfc0f5" font-size="10">Online Analytical Processing</text>
+
+  <text x="455" y="115" fill="#333" font-size="11" font-weight="bold">Purpose:</text>
+  <text x="525" y="115" fill="#555" font-size="11">Business intelligence &amp; analytics</text>
+  <text x="455" y="135" fill="#333" font-size="11" font-weight="bold">Query type:</text>
+  <text x="530" y="135" fill="#555" font-size="11">Complex, long-running, rare</text>
+  <text x="455" y="155" fill="#333" font-size="11" font-weight="bold">Data volume:</text>
+  <text x="535" y="155" fill="#555" font-size="11">Billions of rows</text>
+  <text x="455" y="175" fill="#333" font-size="11" font-weight="bold">Response time:</text>
+  <text x="543" y="175" fill="#555" font-size="11">Seconds to minutes</text>
+  <text x="455" y="195" fill="#333" font-size="11" font-weight="bold">Examples:</text>
+  <text x="520" y="195" fill="#555" font-size="11">Reporting, forecasting, ML training</text>
+  <text x="455" y="215" fill="#333" font-size="11" font-weight="bold">Databases:</text>
+  <text x="528" y="215" fill="#8e44ad" font-size="11">Snowflake, BigQuery, Redshift</text>
+  <rect x="445" y="225" width="345" height="8" rx="4" fill="#f0e8ff"/>
+  <text x="617" y="233" text-anchor="middle" fill="#8e44ad" font-size="9">Total revenue by region for Q3 · Customer churn rate · Trend analysis</text>
+</svg>
