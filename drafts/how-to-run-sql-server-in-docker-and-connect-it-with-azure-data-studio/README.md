@@ -103,6 +103,7 @@ This query will display all records stored in the `Students` table.
 
 ---
 
+**Students Table Created**
 
 ![image03.png](./images/image03.png)
 
