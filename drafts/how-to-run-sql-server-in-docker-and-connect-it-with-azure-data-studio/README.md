@@ -17,10 +17,10 @@ In this section, I set up a **Microsoft SQL Server instance using Docker**, conn
 First, start a SQL Server container using Docker.
 
 ```bash
-docker run -e "ACCEPT_EULA=Y" \
--e "SA_PASSWORD=YourStrongPassword123" \
--p 1433:1433 \
---name sqlserver \
+docker run -e "ACCEPT_EULA=Y"\
+-e "MSSQL_SA_PASSWORD=Password123@"   
+-p 1433:1433 
+--name mssql-server   
 -d mcr.microsoft.com/mssql/server:2022-latest
 ```
 
