@@ -39,7 +39,7 @@ After running this command, SQL Server will be available at **localhost:1433**.
 
 **Docker SQL Server Container Running**
 
-![Docker SQL Server](images/image01)
+![image01.png](./images/image01.png)
 
 ---
 
@@ -66,7 +66,7 @@ Once connected, the SQL Server instance will appear in the **Connections panel**
 
 **Azure Data Studio Connection**
 
-![Azure Data Studio Connection](images/image02)
+![image02.png](./images/image02.png)
 
 ---
 
@@ -103,11 +103,7 @@ This query will display all records stored in the `Students` table.
 
 ---
 
-**Students Table Created**
-
-![Students Table](images/image03)
-![image01.png](./images/image01.png)
-
-![image02.png](./images/image02.png)
 
 ![image03.png](./images/image03.png)
+
+---
