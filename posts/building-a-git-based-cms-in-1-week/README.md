@@ -4,10 +4,8 @@ slug: building-a-git-based-cms-in-1-week
 date: 2026-03-28
 tags: [react, github-api, cms, typescript, project-log]
 category: Project Log
-excerpt: I challenged myself to build a fully functional blog CMS in 1 week using React and the GitHub API. Here's how I shipped a complete, polished product by ruthlessly cutting scope and letting Git do the heavy lifting.
-cover: ./images/cover.jpg
-series: git-and-tools
-seriesOrder: 3
+excerpt: "I challenged myself to build a fully functional blog CMS in 1 week using React and the GitHub API. Here's how I shipped a complete, polished product by ruthlessly cutting scope and letting Git do the heavy lifting."
+cover: ./images/cover.png
 ---
 
 # Building a Git-Based CMS in 1 Week—A Learning Sprint
