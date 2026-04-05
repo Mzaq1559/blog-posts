@@ -4,7 +4,7 @@ slug: neurons-to-chatgpt-neural-networks-llms
 date: 2026-04-05
 tags: [LLM, Neural Networks, Deep Learning, Transformers, AI, Machine Learning, Beginner, ChatGPT]
 category: "AI & Machine Learning"
-cover: ./images/cover.jpg
+cover: ./images/cover.png
 ---
 
 # From Neurons to ChatGPT: A Complete Guide to Neural Networks and Large Language Models
