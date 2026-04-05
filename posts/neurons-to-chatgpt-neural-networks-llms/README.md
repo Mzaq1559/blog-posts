@@ -4,7 +4,7 @@ slug: neurons-to-chatgpt-neural-networks-llms
 date: 2026-04-05
 tags: [LLM, Neural Networks, Deep Learning, Transformers, AI, Machine Learning, Beginner, ChatGPT]
 category: AI & Machine Learning
-cover: ./images/cover.png
+cover: ./images/cover.jpg
 ---
 
 # From Neurons to ChatGPT: A Complete Guide to Neural Networks and Large Language Models
@@ -42,7 +42,7 @@ A single artificial neuron does three things:
 
 That's it. One neuron is useless. But stack millions of them together in layers, and something remarkable happens — the network can learn to approximate almost any function.
 
-> **IMAGE: simple-neuron-diagram.png**
+> **IMAGE: simple-neuron-diagram.svg**
 > *Description: A single artificial neuron showing inputs x1, x2, x3 with weights w1, w2, w3 flowing into a summation node, followed by an activation function, producing output y.*
 
 ### Layers
@@ -93,7 +93,7 @@ But RNNs had a critical flaw: **vanishing gradients**. When training on long seq
 
 **Long Short-Term Memory networks (LSTMs)**, introduced by Hochreiter and Schmidhuber in 1997, solved this with gating mechanisms — special structures that explicitly control what the network remembers, what it forgets, and what it outputs at each step. LSTMs became the dominant architecture for language tasks throughout the 2000s and early 2010s.
 
-> **IMAGE: rnn-vs-lstm.png**
+> **IMAGE: rnn-vs-lstm.jpeg**
 > *Description: Side by side comparison. Left: an unrolled RNN showing hidden state h being passed from step to step across a sequence of words. Right: an LSTM cell showing the forget gate, input gate, cell state, and output gate with labeled arrows.*
 
 ### 2014 — Attention Mechanism
