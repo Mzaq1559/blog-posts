@@ -1,9 +1,9 @@
 ---
-title: From Neurons to ChatGPT: A Complete Guide to Neural Networks and Large Language Models
+title: "From Neurons to ChatGPT: A Complete Guide to Neural Networks and Large Language Models"
 slug: neurons-to-chatgpt-neural-networks-llms
 date: 2026-04-05
 tags: [LLM, Neural Networks, Deep Learning, Transformers, AI, Machine Learning, Beginner, ChatGPT]
-category: AI & Machine Learning
+category: "AI & Machine Learning"
 cover: ./images/cover.jpg
 ---
 
@@ -42,7 +42,10 @@ A single artificial neuron does three things:
 
 That's it. One neuron is useless. But stack millions of them together in layers, and something remarkable happens — the network can learn to approximate almost any function.
 
+![simple-neuron-diagram.svg](https://raw.githubusercontent.com/Mzaq1559/blog-posts/main/posts/neurons-to-chatgpt-neural-networks-llms/images/simple-neuron-diagram.svg)
+
 > **IMAGE: simple-neuron-diagram.svg**
+
 > *Description: A single artificial neuron showing inputs x1, x2, x3 with weights w1, w2, w3 flowing into a summation node, followed by an activation function, producing output y.*
 
 ### Layers
@@ -68,7 +71,12 @@ This is done through:
 
 After thousands or millions of iterations over the training data, the weights settle into values that allow the network to make accurate predictions. The network has "learned."
 
+
+![neural-network-layers.png](https://raw.githubusercontent.com/Mzaq1559/blog-posts/main/posts/neurons-to-chatgpt-neural-networks-llms/images/neural-network-layers.png)
+
+
 > **IMAGE: neural-network-layers.png**
+
 > *Description: A diagram of a feedforward neural network with one input layer (4 nodes), two hidden layers (6 nodes each), and one output layer (2 nodes). Arrows connect every node to every node in the next layer.*
 
 ---
@@ -93,6 +101,11 @@ But RNNs had a critical flaw: **vanishing gradients**. When training on long seq
 
 **Long Short-Term Memory networks (LSTMs)**, introduced by Hochreiter and Schmidhuber in 1997, solved this with gating mechanisms — special structures that explicitly control what the network remembers, what it forgets, and what it outputs at each step. LSTMs became the dominant architecture for language tasks throughout the 2000s and early 2010s.
 
+
+
+![rnn-vs-lstm.jpeg](https://raw.githubusercontent.com/Mzaq1559/blog-posts/main/posts/neurons-to-chatgpt-neural-networks-llms/images/rnn-vs-lstm.jpeg)
+
+
 > **IMAGE: rnn-vs-lstm.jpeg**
 > *Description: Side by side comparison. Left: an unrolled RNN showing hidden state h being passed from step to step across a sequence of words. Right: an LSTM cell showing the forget gate, input gate, cell state, and output gate with labeled arrows.*
 
@@ -111,6 +124,10 @@ In 2017, Google researchers published a paper titled *"Attention Is All You Need
 The **Transformer** architecture was born. It processes the entire sequence at once rather than one word at a time. Every word attends to every other word simultaneously. This makes Transformers dramatically faster to train on modern hardware (GPUs and TPUs love parallelism) and dramatically better at capturing long-range dependencies.
 
 The Transformer is the foundation of every major language model today — GPT, BERT, Claude, Gemini, LLaMA. All of them are, at their core, Transformers.
+
+
+![transformer-timeline.png](https://raw.githubusercontent.com/Mzaq1559/blog-posts/main/posts/neurons-to-chatgpt-neural-networks-llms/images/transformer-timeline.png)
+
 
 > **IMAGE: transformer-timeline.png**
 > *Description: A horizontal timeline showing: 1958 Perceptron → 1986 Backpropagation → 1997 LSTM → 2014 Attention → 2017 Transformer → 2018 BERT/GPT-1 → 2020 GPT-3 → 2022 ChatGPT → 2023-2025 Claude, Gemini, LLaMA*
@@ -160,6 +177,10 @@ Self-attention is the mechanism that allows a Transformer to do exactly this. Fo
 
 The word "bank" in *"I went to the bank to deposit money"* will develop a completely different internal representation than "bank" in *"The river bank was covered in reeds"* — because the surrounding words it attends to are different.
 
+
+![self-attention-example.png](https://raw.githubusercontent.com/Mzaq1559/blog-posts/main/posts/neurons-to-chatgpt-neural-networks-llms/images/self-attention-example.png)
+
+
 > **IMAGE: self-attention-example.png**
 > *Description: A sentence "The trophy didn't fit in the bag because it was too big" with colored lines connecting "it" to "trophy" (thick line, high attention weight) and "it" to "bag" (thin line, low attention weight). Labels show attention scores as percentages.*
 
@@ -178,6 +199,10 @@ Unlike RNNs, Transformers process all tokens simultaneously. This means they hav
 ### Stacking It All Together
 
 A full Transformer stacks many of these blocks — attention + feed-forward — on top of each other. GPT-3 has 96 such layers. Each layer refines the representations produced by the previous layer. By the final layer, each token's representation encodes not just what the token is, but its full meaning in context, informed by everything else in the sequence.
+
+
+![transformer-architecture.png](https://raw.githubusercontent.com/Mzaq1559/blog-posts/main/posts/neurons-to-chatgpt-neural-networks-llms/images/transformer-architecture.png)
+
 
 > **IMAGE: transformer-architecture.png**
 > *Description: A vertical diagram of a Transformer block showing: Input Embeddings + Positional Encoding → Multi-Head Self-Attention → Add & Norm → Feed-Forward Network → Add & Norm → Output. Multiple such blocks stacked vertically with an arrow indicating N layers.*
@@ -201,6 +226,10 @@ Human trainers write examples of ideal conversations — a question and a high-q
 This is the step that transforms a language model into a genuinely useful assistant. Human raters compare multiple model outputs and rank them from best to worst. A separate model — called a **reward model** — is trained to predict these human preferences. The language model is then fine-tuned using reinforcement learning to produce outputs that score highly according to the reward model.
 
 RLHF is why ChatGPT feels different from earlier GPT models. It is why the model refuses harmful requests, stays on topic, and gives structured, helpful answers. The model has been shaped by human feedback at a deep level.
+
+
+![rlhf-pipeline.png](https://raw.githubusercontent.com/Mzaq1559/blog-posts/main/posts/neurons-to-chatgpt-neural-networks-llms/images/rlhf-pipeline.png)
+
 
 > **IMAGE: rlhf-pipeline.png**
 > *Description: Three stage pipeline. Stage 1: "Pre-training" shows a large corpus of text feeding into a Transformer. Stage 2: "SFT" shows human-written Q&A pairs fine-tuning the model. Stage 3: "RLHF" shows human rankers rating model outputs, a reward model being trained on rankings, and the language model being updated via PPO (reinforcement learning).*
