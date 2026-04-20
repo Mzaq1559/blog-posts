@@ -3,7 +3,7 @@ title: "Running SQL Server in Docker & Exploring Databases with Azure Data Studi
 slug: sql-server-docker-azure-data-studio-northwind
 date: 2026-04-05
 tags: [SQL, Docker, Azure Data Studio, Database, DBMS, Northwind, DBeaver, Beginner]
-category: Databases
+category: Project Log
 excerpt: "Learn how to spin up Microsoft SQL Server 2022 in a Docker container, connect it with Azure Data Studio, create your first database and table, and explore the classic Northwind sample database using SQL queries and ER diagrams in DBeaver."
 cover: ./images/cover.png
 ---

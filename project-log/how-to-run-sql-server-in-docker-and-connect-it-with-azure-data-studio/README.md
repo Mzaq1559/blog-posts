@@ -3,7 +3,7 @@ title: Setting up SQL Server using Docker and Azure Data Studio
 slug: how-to-run-sql-server-in-docker-and-connect-it-with-azure-data-studio
 date: 2026-04-03
 tags: []
-category: Databases
+category: Project Log
 cover: ./images/cover.png
 ---
 
