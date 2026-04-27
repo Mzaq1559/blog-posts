@@ -3,7 +3,7 @@ title: "From JavaScript to TypeScript: A Complete Guide to Understanding the Dif
 slug: typescript-vs-javascript-complete-guide
 date: 2026-04-27
 tags: [TypeScript, JavaScript, Web Development, Programming, Beginner, Frontend, Backend, Node.js]
-category: web-development
+category: Web Development
 ---
 
 # From JavaScript to TypeScript: A Complete Guide to Understanding the Difference
