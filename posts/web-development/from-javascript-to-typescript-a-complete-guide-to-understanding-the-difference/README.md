@@ -150,7 +150,7 @@ multiply("hello", 10); // ❌ Error caught immediately by the compiler
 
 ## 4. TypeScript Features In Depth {#typescript-features}
 
-![typescript-features-overview](./images/typescript-features-overview.jpg)
+![typescript-features-overview](./images/typescript-features-overview.png)
 
 TypeScript's type system is remarkably sophisticated. Here's a tour of its most important features.
 
@@ -678,7 +678,7 @@ No. Even solo developers on medium-sized projects benefit from the autocomplete 
 
 ## 13. Summary {#summary}
 
-![summary-diagram](./images/summary-diagram.jpg)
+![summary-diagram](./images/summary-diagram.png)
 
 | Feature            | JavaScript                    | TypeScript                              |
 | ------------------ | ----------------------------- | --------------------------------------- |
