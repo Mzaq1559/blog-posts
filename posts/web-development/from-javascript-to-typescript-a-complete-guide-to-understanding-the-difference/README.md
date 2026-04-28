@@ -15,24 +15,6 @@ By the end, you'll understand what each language is, how they compare, when to u
 
 ---
 
-## Table of Contents
-
-1. [What Is JavaScript?](#what-is-javascript)
-2. [What Is TypeScript?](#what-is-typescript)
-3. [The Core Difference: Static vs Dynamic Typing](#the-core-difference)
-4. [TypeScript Features In Depth](#typescript-features)
-5. [JavaScript Features That Still Matter](#javascript-features)
-6. [Side-by-Side Code Comparison](#side-by-side-comparison)
-7. [How TypeScript Compiles to JavaScript](#how-typescript-compiles)
-8. [Ecosystem and Tooling](#ecosystem-and-tooling)
-9. [Performance](#performance)
-10. [When to Use TypeScript vs JavaScript](#when-to-use)
-11. [Migrating from JavaScript to TypeScript](#migrating)
-12. [Common Misconceptions](#misconceptions)
-13. [Summary](#summary)
-
----
-
 ## 1. What Is JavaScript? {#what-is-javascript}
 
 ![javascript-overview](./images/javascript-overview.png)
@@ -702,24 +684,3 @@ If you're just starting out, learn JavaScript first. Understand how the language
 If you already know JavaScript, investing a week to learn TypeScript basics will pay dividends for the rest of your career. Most modern job listings — especially for frontend and full-stack roles — list TypeScript as either required or strongly preferred.
 
 ---
-
-### Images to Create
-
-Here is the list of images referenced in this post. Save them in the `images/` folder with these exact filenames:
-
-| Filename                           | Description / Illustration Idea                                                                                 |
-| ---------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `cover.jpg`                        | Split-screen logo art: JS yellow badge on left, TS blue badge on right, merging in the middle                   |
-| `javascript-overview.jpg`          | Timeline of JavaScript from 1995 to 2026 with key milestones (ES6, Node.js, etc.)                               |
-| `typescript-overview.jpg`          | TypeScript logo with "Superset of JavaScript" label and the year 2012                                           |
-| `static-vs-dynamic-typing.jpg`     | Two-column diagram: Dynamic (errors at runtime, red ❌) vs Static (errors at compile time, green ✅ before run) |
-| `typescript-features-overview.jpg` | Mind map or grid showing TS features: Interfaces, Generics, Enums, Utility Types, Union Types                   |
-| `javascript-modern-features.jpg`   | Code snippet cards showing destructuring, spread, async/await, optional chaining                                |
-| `side-by-side-comparison.jpg`      | Two code editor windows: JS on left (no types), TS on right (with types), highlighting the difference           |
-| `typescript-compilation-flow.jpg`  | Flowchart: `.ts file` → `tsc compiler` → `type errors (if any)` → `.js file` → `browser/node`                   |
-| `ecosystem-tooling.jpg`            | VS Code screenshot or mockup showing TypeScript autocomplete / IntelliSense dropdown in action                  |
-| `performance-comparison.jpg`       | Bar chart: Runtime performance (identical), Compile time (tsc vs esbuild speed)                                 |
-| `when-to-use-decision.jpg`         | Decision flowchart: "Is the project large? Is it a team? Long-lived?" → TS. Otherwise → JS                      |
-| `migration-path.jpg`               | Step-by-step roadmap: JS project → add TS config → rename files → fix types → strict mode                       |
-| `common-misconceptions.jpg`        | Myth vs Reality cards busting the 5 common misconceptions                                                       |
-| `summary-diagram.jpg`              | Venn diagram: JS circle, TS circle as a larger circle fully containing JS, with feature labels                  |
