@@ -83,8 +83,8 @@ each post lives in its own folder with:
 
 ## 🚀 About
 
-[2-3 sentences about you. YOUR words. write it.]
+I am a forth semester student doing bachelors in computer science i am planning to document everything i learn in post-log along with all the other posts in blog-post, feel free to add a post if you want.... 
 
 ## 📝 Latest Posts
 
-[update this manually as you publish]
+implenting backpropagation from scratch by following the tutorial on micrograd. i will soon create a blog post for it too
