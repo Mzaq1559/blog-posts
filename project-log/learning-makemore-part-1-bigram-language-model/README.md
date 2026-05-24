@@ -294,7 +294,8 @@ Both are equivalent for bigrams. The point of doing it twice is to understand _w
 ![Bigram count matrix heatmap](./images/bigram-heatmap.png)
 ![One-hot encoding visualized](./images/one-hot-encoding.png)
 ![Training loss — 100 steps](./images/training-loss.png)
-![Generated names comparison](./images/generated-names.png)
+![Generated names comparison](./images/generated-names1.png)
+![Generated names comparison](./images/generated-names2.png)
 
 ---
 
