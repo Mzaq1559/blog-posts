@@ -4,7 +4,7 @@ slug: learning-makemore-part-1-bigram-language-model
 date: 2026-05-24
 tags: [AI, Machine Learning, Neural Networks, Python, NLP, Backpropagation]
 category: Project Log
-cover: ./images/cover.svg
+cover: ./images/cover.png
 ---
 
 ## Building a Character-Level Language Model from Scratch
