@@ -4,7 +4,7 @@ slug: medibook-ai-alibaba-cloud-hackathon-pakistan-2026
 date: 2026-09-04
 tags: [AI, FastAPI, React, PostgreSQL, Docker, Hackathon, Python]
 category: Project Log
-cover: ./images/cover.svg
+cover: ./images/cover.png
 ---
 
 ## We Built an AI Clinic Receptionist in 6 Days
