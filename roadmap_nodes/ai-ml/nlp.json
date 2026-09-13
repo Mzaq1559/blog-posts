@@ -4,7 +4,7 @@
   "category": "ai-ml",
   "status": "in-progress",
   "description": "LLM integration, prompt engineering, AI service calls — applied in hackathon project.",
-  "x": 860,
+  "x": 810,
   "y": 440,
   "children": ["mlops"]
 }

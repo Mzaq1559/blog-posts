@@ -4,7 +4,7 @@
   "category": "ai-ml",
   "status": "planned",
   "description": "Image classification, object detection, segmentation — planned after deep learning foundation.",
-  "x": 980,
+  "x": 1030,
   "y": 440,
   "children": ["mlops"]
 }
