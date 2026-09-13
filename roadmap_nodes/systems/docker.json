@@ -1,0 +1,10 @@
+{
+  "id": "docker",
+  "label": "Docker",
+  "category": "systems",
+  "status": "completed",
+  "description": "Containerisation, Dockerfiles, docker-compose — used in DBMS lab and hackathon multi-service builds.",
+  "x": 380,
+  "y": 320,
+  "children": ["networking"]
+}

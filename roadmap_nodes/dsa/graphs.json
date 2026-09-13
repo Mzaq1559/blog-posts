@@ -1,0 +1,10 @@
+{
+  "id": "graphs",
+  "label": "Graphs",
+  "category": "dsa",
+  "status": "in-progress",
+  "description": "BFS, DFS, Dijkstra, topological sort, union-find — touched via coursework.",
+  "x": 120,
+  "y": 440,
+  "children": ["dynamic-programming"]
+}

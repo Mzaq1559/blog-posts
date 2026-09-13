@@ -1,0 +1,10 @@
+{
+  "id": "react",
+  "label": "React",
+  "category": "web",
+  "status": "completed",
+  "description": "Hooks, context, routing, component architecture — portfolio site, TextUtils, hackathon frontend.",
+  "x": 640,
+  "y": 440,
+  "children": ["fastapi", "sql"]
+}

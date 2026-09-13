@@ -1,0 +1,10 @@
+{
+  "id": "neural-networks",
+  "label": "Neural Networks",
+  "category": "ai-ml",
+  "status": "planned",
+  "description": "Perceptrons, backpropagation, activation functions, training fundamentals.",
+  "x": 920,
+  "y": 200,
+  "children": ["deep-learning"]
+}

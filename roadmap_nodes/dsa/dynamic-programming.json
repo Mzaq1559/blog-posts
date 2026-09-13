@@ -1,0 +1,10 @@
+{
+  "id": "dynamic-programming",
+  "label": "Dynamic Programming",
+  "category": "dsa",
+  "status": "in-progress",
+  "description": "Memoization, tabulation, 1D/2D DP patterns — coursework exposure, not deeply practised.",
+  "x": 120,
+  "y": 560,
+  "children": ["advanced-algorithms"]
+}

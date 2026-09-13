@@ -1,0 +1,10 @@
+{
+  "id": "mlops",
+  "label": "MLOps",
+  "category": "ai-ml",
+  "status": "planned",
+  "description": "Model serving, monitoring, CI/CD for ML, experiment tracking — future goal.",
+  "x": 920,
+  "y": 560,
+  "children": []
+}

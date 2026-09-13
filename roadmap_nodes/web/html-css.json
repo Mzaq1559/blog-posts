@@ -1,0 +1,10 @@
+{
+  "id": "html-css",
+  "label": "HTML / CSS",
+  "category": "web",
+  "status": "completed",
+  "description": "Semantic HTML5, Flexbox, Grid, animations, responsive design — foundation for all web projects.",
+  "x": 640,
+  "y": 80,
+  "children": ["javascript"]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "typescript",
+  "label": "TypeScript",
+  "category": "web",
+  "status": "completed",
+  "description": "Static typing, generics, utility types — used in hackathon clinic-management platform.",
+  "x": 640,
+  "y": 320,
+  "children": ["react"]
+}

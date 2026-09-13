@@ -1,0 +1,10 @@
+{
+  "id": "linked-lists",
+  "label": "Linked Lists",
+  "category": "dsa",
+  "status": "completed",
+  "description": "Singly & doubly linked lists, reversal, cycle detection, merge operations.",
+  "x": 120,
+  "y": 200,
+  "children": ["trees"]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "os-fundamentals",
+  "label": "OS Fundamentals",
+  "category": "systems",
+  "status": "completed",
+  "description": "Process scheduling, virtual memory, IPC, concurrency primitives — covered in coursework.",
+  "x": 380,
+  "y": 200,
+  "children": ["docker"]
+}

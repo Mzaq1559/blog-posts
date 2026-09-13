@@ -1,0 +1,10 @@
+{
+  "id": "fastapi",
+  "label": "FastAPI",
+  "category": "web",
+  "status": "completed",
+  "description": "REST APIs, dependency injection, async endpoints — hackathon clinic-management backend.",
+  "x": 590,
+  "y": 560,
+  "children": []
+}

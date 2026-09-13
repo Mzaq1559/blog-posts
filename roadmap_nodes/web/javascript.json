@@ -1,0 +1,10 @@
+{
+  "id": "javascript",
+  "label": "JavaScript",
+  "category": "web",
+  "status": "completed",
+  "description": "ES6+, async/await, closures, DOM manipulation — shipped in TextUtils and portfolio projects.",
+  "x": 640,
+  "y": 200,
+  "children": ["typescript"]
+}

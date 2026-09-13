@@ -1,0 +1,10 @@
+{
+  "id": "python-ml",
+  "label": "Python for ML",
+  "category": "ai-ml",
+  "status": "completed",
+  "description": "NumPy, Pandas, Scikit-learn — time series forecasting and sentiment modelling projects.",
+  "x": 920,
+  "y": 80,
+  "children": ["neural-networks"]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "advanced-algorithms",
+  "label": "Advanced Algorithms",
+  "category": "dsa",
+  "status": "planned",
+  "description": "Segment trees, Fenwick trees, network flow, advanced graph algorithms.",
+  "x": 120,
+  "y": 680,
+  "children": []
+}

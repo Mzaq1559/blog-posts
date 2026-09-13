@@ -1,0 +1,10 @@
+{
+  "id": "networking",
+  "label": "Networking",
+  "category": "systems",
+  "status": "planned",
+  "description": "TCP/IP, HTTP, DNS, load balancing, sockets — theoretical knowledge, no shipped project yet.",
+  "x": 380,
+  "y": 440,
+  "children": ["cloud"]
+}

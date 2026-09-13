@@ -1,0 +1,10 @@
+{
+  "id": "trees",
+  "label": "Trees",
+  "category": "dsa",
+  "status": "completed",
+  "description": "Binary trees, BSTs, AVL, DFS/BFS traversals, lowest common ancestor.",
+  "x": 120,
+  "y": 320,
+  "children": ["graphs"]
+}

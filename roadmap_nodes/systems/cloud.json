@@ -1,0 +1,10 @@
+{
+  "id": "cloud",
+  "label": "Cloud",
+  "category": "systems",
+  "status": "planned",
+  "description": "AWS / GCP fundamentals, serverless, managed services — on the roadmap.",
+  "x": 380,
+  "y": 560,
+  "children": []
+}

@@ -1,0 +1,10 @@
+{
+  "id": "arrays-strings",
+  "label": "Arrays & Strings",
+  "category": "dsa",
+  "status": "completed",
+  "description": "Sliding window, two pointers, prefix sums, string manipulation and pattern matching.",
+  "x": 120,
+  "y": 80,
+  "children": ["linked-lists"]
+}

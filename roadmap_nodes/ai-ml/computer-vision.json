@@ -1,0 +1,10 @@
+{
+  "id": "computer-vision",
+  "label": "Computer Vision",
+  "category": "ai-ml",
+  "status": "planned",
+  "description": "Image classification, object detection, segmentation — planned after deep learning foundation.",
+  "x": 980,
+  "y": 440,
+  "children": ["mlops"]
+}

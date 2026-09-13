@@ -1,0 +1,10 @@
+{
+  "id": "linux",
+  "label": "Linux",
+  "category": "systems",
+  "status": "completed",
+  "description": "Daily Ubuntu dev environment — shell scripting, file system, process management, permissions.",
+  "x": 380,
+  "y": 80,
+  "children": ["os-fundamentals"]
+}

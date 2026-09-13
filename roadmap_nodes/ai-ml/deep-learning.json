@@ -1,0 +1,10 @@
+{
+  "id": "deep-learning",
+  "label": "Deep Learning",
+  "category": "ai-ml",
+  "status": "planned",
+  "description": "CNNs, RNNs, transformers, PyTorch / TensorFlow — next on the learning path.",
+  "x": 920,
+  "y": 320,
+  "children": ["nlp", "computer-vision"]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "sql",
+  "label": "SQL",
+  "category": "web",
+  "status": "completed",
+  "description": "SQL Server, complex queries, stored procedures, schema design — DBMS rental-management app.",
+  "x": 700,
+  "y": 560,
+  "children": []
+}
