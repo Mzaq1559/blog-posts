@@ -2,65 +2,63 @@
 title: Building MediBook AI — A Hackathon in 6 Days
 slug: medibook-ai-alibaba-cloud-hackathon-pakistan-2026
 date: 2026-09-04
-tags: [AI, FastAPI, React, PostgreSQL, Docker, Hackathon, Python]
+excerpt: A four-person hackathon build of an AI receptionist for small clinics, what broke along the way, and how the chatbot went from rules to RAG to a tool-calling agent afterwards.
+tags: [AI, FastAPI, React, PostgreSQL, Docker, Hackathon, Python, RAG, Groq]
 category: Project Log
 cover: ./images/cover.png
 ---
 
-## We Built an AI Clinic Receptionist in 6 Days
+<!-- CHECK: the title and intro say "6 days" (the repo description says the same), but the commit history on main runs from late August to Sept 7 and my notes give a build window of Aug 22 - Sept 4. Confirm what the 6 days refers to and adjust the title/intro if needed. -->
 
-In August 2026 I led a 4-person team in the **Alibaba Cloud AI Hackathon Pakistan 2026** — theme: *AI for Pakistan's Future*. We had 6 days. We built MediBook AI: a 24/7 AI-powered virtual receptionist for small clinics in Pakistan. Patients describe symptoms in plain language, the system triages urgency, recommends a specialist, checks live doctor availability, and books an appointment — all through chat.
+## What we built
 
-This is my log of how we did it, what I personally worked on, and what I'd do differently.
+In August 2026 I led a 4-person team in the **Alibaba Cloud AI Hackathon Pakistan 2026** (theme: *AI for Pakistan's Future*). We built MediBook AI, a 24/7 virtual receptionist for small clinics. A patient describes symptoms in plain language, the system triages urgency, suggests a specialist, checks live doctor availability and books the appointment, all through chat.
 
----
-
-## The Problem We Picked
-
-Small clinics in Pakistan — the kind with one doctor, one receptionist, and a notebook — have a brutal operational problem. The receptionist answers the phone, handles walk-ins, takes notes, and manages a paper appointment book, all at once. The result:
-
-- Double bookings because there's no real-time availability check
-- Patients who can't get help after hours
-- No-shows because there are no automated reminders
-- The same questions asked and answered a hundred times a day: *"Is the doctor available tomorrow?"*, *"What's the consultation fee?"*
-
-We wanted to build something that solved the receptionist overload without requiring the clinic to buy expensive enterprise software.
+This is my log of how it went: what I worked on, what broke, and what the chatbot turned into after the hackathon version. The last part matters, because the version I describe first is not the one in the repo today.
 
 ---
 
-## The Team
+## The problem we picked
+
+Small clinics in Pakistan often run on one doctor, one receptionist and a notebook. The receptionist answers the phone, handles walk-ins and keeps a paper appointment book all at once. That gives you:
+
+- double bookings, because there's no real-time availability check
+- patients who can't get help after hours
+- no-shows, because nothing sends reminders
+- the same questions a hundred times a day (*"Is the doctor available tomorrow?"*, *"What's the fee?"*)
+
+We wanted to take that load off the receptionist without asking a clinic to buy enterprise software.
+
+---
+
+## The team
 
 | Name | Role |
 |------|------|
-| Me (Muhammad Zulqarnain) | Project lead, architecture, Docker, chat integration, seeding |
-| Sidra Pervaiz | FastAPI backend — models, appointment engine, tests |
-| Aleeza Imran | React frontend — UI, design system, page layouts |
-| Ayesha Sajjad | AI microservice — Groq NLU, symptom triage, conversation flow |
+| Me (Muhammad Zulqarnain) | Project lead, architecture, Docker, chat integration, seeding, RAG integration |
+| Sidra Pervaiz | FastAPI backend: models, appointment engine, tests |
+| Aleeza Imran | React frontend: UI, design system, chat interface |
+| Ayesha Sajjad | AI service: Groq NLU, symptom triage, conversation flow, integrations |
 
-We split cleanly along service boundaries from day one, which saved us from stepping on each other's code. That was intentional — I've seen group projects fall apart because two people are editing the same file.
-
----
-
-## What We Shipped
-
-Before I get into the technical details, here's what actually works in the final build:
-
-- Full patient booking flow: symptoms → AI triage → doctor selection → slot confirmation → saved to PostgreSQL
-- Groq LLM-powered chat for natural language understanding
-- Emergency detection — if you describe chest pain or difficulty breathing, the bot immediately stops the booking flow and tells you to call 1100
-- Admin dashboard with live clinic metrics
-- Doctor dashboard with appointment management
-- JWT auth with refresh tokens, role-based route guards
-- Google Calendar sync + 24h/1h email reminders
-- Everything containerised in Docker Compose — 5 services, one command to start
-
-![MediBook AI — patient chat booking flow](./images/chat-booking-flow.png)
+We split along service boundaries from day one so we weren't editing the same files. I've seen group projects fall apart over that.
 
 ---
 
-## The Architecture
+## The first version
 
-Three separate services talk to each other:
+What worked in the hackathon build:
+
+- the full booking flow: symptoms → triage → doctor selection → slot confirmation → saved to PostgreSQL
+- Groq-powered chat for understanding what the patient meant
+- emergency detection: describe chest pain or trouble breathing and the bot stops the booking flow and tells you to call 1100
+- admin and doctor dashboards
+- JWT auth with refresh tokens and role-based route guards
+- Google Calendar sync and 24h/1h email reminders
+- everything in Docker Compose, one command to start
+
+<!-- IMAGE: ./images/chat-booking-flow.png — Screenshot of the patient chat from the first symptom message to the booking confirmation. Show the triage reply, the doctor options and the final confirmation. Place it here, right after the feature list, so the reader sees the product before the internals. -->
+
+Three services talk to each other:
 
 ```
 Frontend (React, port 3000)
@@ -72,25 +70,17 @@ Frontend (React, port 3000)
                Backend API (to fetch doctors, create appointments)
 ```
 
-The frontend never talks to the AI service directly for booking — the AI service holds the conversation state and calls the backend API on the patient's behalf, forwarding the JWT so the backend can authorize the appointment creation.
+The AI service holds the conversation state and calls the backend on the patient's behalf, forwarding the JWT so the backend can authorize the booking. The frontend never books directly through the AI service. Splitting it this way meant the AI service could be restarted or swapped without touching the backend, and the backend stayed the source of truth for data.
 
-This separation was my call and it was the right one. The AI service can be restarted, scaled, or swapped without touching the backend or frontend. The backend is the source of truth for all data.
-
-![System architecture diagram](./images/architecture.png)
+<!-- IMAGE: ./images/architecture.png — Architecture diagram: React frontend → FastAPI backend and AI service → Groq, with PostgreSQL behind the backend. Draw the arrows the way the text describes them (AI service calls the backend with the forwarded JWT). Place it after the ASCII diagram above so readers can compare. -->
 
 ---
 
-## My Part: Architecture, Docker, and Chat Integration
+## My part: Docker, seed data, chat integration
 
 ### Docker Compose
 
-Getting five services to start in the right order with the right environment variables and not fight each other is harder than it sounds. The dependency chain is:
-
-```
-PostgreSQL → Backend → AI Service → Frontend
-```
-
-The backend can't start until the database is healthy. The AI service can't do bookings until the backend is up. I spent half of day one getting the health checks right so `docker compose up -d` just works.
+Getting five services to start in the right order without fighting each other took longer than I expected. The chain is `PostgreSQL → Backend → AI Service → Frontend`. I spent about half of day one getting the health checks right so `docker compose up -d` just worked:
 
 ```yaml
 backend:
@@ -103,62 +93,50 @@ ai-service:
       condition: service_started
 ```
 
-The Vite dev server proxies `/api` to the backend and `/chat` to the AI service. This means the frontend uses a single origin — no CORS headaches in development or through dev tunnels.
+The Vite dev server proxies `/api` to the backend and `/chat` to the AI service, so the browser only sees one origin and there are no CORS problems in development.
 
-### The Seed Script
+### The seed script
 
-For a hackathon demo, you need data that looks real. I wrote the seed script that populates:
+A blank database kills a demo, so I wrote a seed script: 3 clinics, 3 doctors with schedules and holidays, 3 patients and 300+ appointments across past and future dates. There's also a bulk mode (about 19 doctors and 100–150 patients). Two modes because the demo wants a realistic dashboard while the tests want something small and predictable.
 
-- 3 clinics
-- 3 doctors with schedules and holidays
-- 3 patients
-- 300+ appointments spread across past and future dates
+### Chat integration
 
-The bulk test mode generates ~19 doctors and 100–150 patients. The reason for two modes: judges want to see a realistic dashboard during the demo, but the test suite needs a lean, predictable dataset.
-
-### Chat Integration
-
-The trickiest part I worked on was wiring the conversation state in the AI service to the actual booking API. The flow has several steps and the patient can drop out at any point:
+The hard part was wiring the conversation state to the booking API. The patient can drop out at any step:
 
 ```
 symptoms entered
     → AI asks follow-up questions
-    → triage maps symptoms to specialization
-    → fetch matching doctors from backend
+    → triage maps symptoms to a specialization
+    → fetch matching doctors from the backend
     → fetch availability for each doctor
-    → present options to patient
-    → patient selects doctor + slot
+    → present options
+    → patient picks doctor + slot
     → patient confirms ("yes")
-    → POST /api/appointments with patient's JWT
+    → POST /api/appointments with the patient's JWT
     → return confirmation
 ```
 
-The hard part is that "yes" needs to be interpreted in context. If the patient hasn't selected a slot yet, "yes" shouldn't trigger a booking. Ayesha built the conversation state machine; my job was making sure the backend calls were correct and the JWT forwarding worked.
-
-![Appointment booking — confirmed in DB](./images/booking-confirmed.png)
+The subtle bit is that "yes" only means something in context. If no slot has been chosen yet, "yes" must not trigger a booking. Ayesha built the state machine; I made sure the backend calls and the JWT forwarding were right.
 
 ---
 
-## The AI Pipeline
+## How the AI part worked at first
 
-Ayesha built this part but I spent enough time debugging it to understand it well.
-
-The AI service uses a two-layer approach: a **keyword pre-router** for obvious cases, and **Groq LLM in JSON mode** for everything else.
+The first version used two layers: a keyword pre-router for obvious cases, and Groq in JSON mode for everything else.
 
 ```python
-# Simplified NLU call
 response = groq_client.chat.completions.create(
     model=settings.GROQ_MODEL,
     messages=[{"role": "user", "content": prompt}],
     response_format={"type": "json_object"}
 )
 intent_data = json.loads(response.choices[0].message.content)
-# → { intent, symptoms, confirms, doctor_name, date, ... }
+# -> { intent, symptoms, confirms, doctor_name, date, ... }
 ```
 
-The JSON mode forces the model to return structured data, which makes it reliable to parse. The alternative — asking the model to return plain text and parsing it with regex — breaks on edge cases constantly.
+JSON mode made the output reliable to parse. Asking for plain text and using regex broke on edge cases constantly.
 
-The symptom triage is entirely rule-based, not LLM. Symptoms map to specializations via keyword matching:
+Triage in this version was rule-based, not LLM: symptoms mapped to a specialization by keyword.
 
 ```python
 SYMPTOM_MAP = {
@@ -166,71 +144,34 @@ SYMPTOM_MAP = {
     "heart": "Cardiologist",
     "sore throat": "ENT Specialist",
     "rash": "Dermatologist",
-    ...
 }
 ```
 
-The LLM extracts what the patient said. The rules decide where to route them. This is the right split — LLMs are bad at consistently following routing rules, but good at understanding what a patient means when they describe their symptoms in their own words.
+The LLM extracts what the patient said, and the rules decide where to route them. Emergency keywords are checked before any LLM call, so a possible emergency doesn't wait on model latency.
 
-### Emergency Detection
-
-Before anything else, the AI service checks for emergency keywords:
-
-```python
-EMERGENCY_KEYWORDS = [
-    "chest pain", "can't breathe", "heart attack",
-    "stroke", "unconscious", "severe bleeding", ...
-]
-```
-
-If any match, the bot immediately exits the booking flow and returns emergency contact numbers. This runs before the LLM call — we don't want a 300ms latency on a potential emergency.
-
-![Emergency detection output](./images/emergency-detection.png)
+<!-- IMAGE: ./images/emergency-detection.png — Screenshot of the chat responding to something like "I have chest pain": the booking flow stops and the emergency numbers are shown. Place it right after this paragraph; it's the clearest demonstration of why the check runs before the LLM. -->
 
 ---
 
-## The Backend
+## The backend
 
-Sidra built the core backend. The thing I found most interesting technically was the availability engine.
+Sidra built the core. The part I found most interesting was the availability engine. Computing a doctor's free slots means: take the weekly schedule, check clinic holidays, fetch that day's existing appointments, subtract booked slots, respect `max_patients_per_day`, and only return future slots. A bug there means double bookings, which is the exact problem we set out to fix. The backend also validates on insert, so if two requests race for one slot the second gets a 409 and the AI service handles it.
 
-Computing available slots for a doctor is not trivial:
+There are 9 tables, all with UUID primary keys. Appointments carry `google_calendar_event_id`, `reminder_sent_24h` and `reminder_sent_1h`, which the scheduler reads to know which reminders are still owed.
 
-1. Get the doctor's weekly schedule (which days, what hours)
-2. Check clinic holidays for that date
-3. Fetch all existing appointments for that day
-4. Subtract booked slots from the schedule
-5. Respect `max_patients_per_day`
-6. Return only future slots
-
-A bug here means double bookings, which is the exact problem we were trying to solve. The backend validates on insert — if two requests race to book the same slot, the second one fails with a 409 and the AI service handles it gracefully.
-
-### The Database
-
-9 tables. The key ones:
-
-```
-users → patients / doctors (one-to-one via user_id)
-clinics → doctors (one-to-many)
-doctors → appointments (one-to-many)
-patients → appointments (one-to-many)
-appointments → prescriptions (one-to-one)
-```
-
-All PKs are UUIDs. Appointments carry `google_calendar_event_id`, `reminder_sent_24h`, and `reminder_sent_1h` fields — the scheduler background task reads these to know what reminders still need to go out.
-
-![Admin dashboard — live clinic metrics](./images/admin-dashboard.png)
+<!-- IMAGE: ./images/admin-dashboard.png — Screenshot of the admin dashboard with the seeded data loaded (clinic metrics, appointment counts). Place it after this section; it shows what the seed script and the appointment tables produce. -->
 
 ---
 
-## What Actually Broke
+## What broke during the build
 
-**Day 2 — JWT forwarding.** The AI service was making backend calls without the patient's token, so appointments were being created without an authenticated user. Fixed by extracting the token from the incoming chat request and forwarding it as a header on every outbound backend call.
+**JWT forwarding.** The AI service was calling the backend without the patient's token, so appointments were created with no authenticated user. The fix was to pull the token from the incoming chat request and forward it as a header on every outbound backend call.
 
-**Day 3 — conversation state.** The AI service stores conversation state in memory (a Python dict keyed by `conversation_id`). During development we kept restarting the container and losing state mid-conversation. Not a bug, just an annoying workflow issue. Production fix is Redis or PostgreSQL — we ran out of time.
+**Losing state on restart.** Conversation state lived in a Python dict keyed by `conversation_id`. Every container restart during development wiped it mid-conversation. Not a bug, just annoying. Persisting it (Redis or PostgreSQL) was the fix we ran out of time for, and the README still lists in-memory sessions as a known limit.
 
-**Day 4 — the seed script and test isolation.** The test suite was running against the same database as the seeded data, which made test counts unpredictable. Fixed by making tests use an in-memory SQLite instance via `tests/conftest.py` while the seed targets PostgreSQL.
+**Tests and seed data sharing a database.** Test counts were unpredictable because the tests ran against the seeded data. The tests now use in-memory SQLite through `tests/conftest.py`, while the seed targets PostgreSQL.
 
-**Day 5 — Docker build times.** Cold builds were taking 4–5 minutes because `pip install` was running every time. Fixed with proper layer ordering — copy `requirements.txt` and install dependencies before copying application code, so the dependency layer is cached unless requirements change.
+**Slow Docker builds.** Cold builds took 4–5 minutes because `pip install` ran every time. Copying `requirements.txt` and installing before copying the app code fixed it:
 
 ```dockerfile
 COPY requirements.txt .
@@ -240,56 +181,58 @@ COPY . .                                              # only this busts cache
 
 ---
 
-## What I Learned
+## It didn't stay a rule-based bot
 
-**Split services by responsibility from day one.** When the backend, AI service, and frontend have clean contracts (REST APIs with Pydantic schemas), three people can work in parallel without conflicts. We merged with zero major integration bugs on day 5.
+The repo kept going after the hackathon build, and the chatbot now exists in three versions:
 
-**Rule-based triage + LLM NLU is better than LLM-only.** Asking the LLM to both understand *and* route is unreliable. Use the LLM for what it's good at — understanding messy natural language — and keep the routing logic deterministic.
+- **`baseline`**: what I described above (keyword pre-router, Groq JSON-mode NLU, rule-based triage).
+- **`rag`**: a branch that adds retrieval. Medical knowledge is embedded with sentence-transformers, stored in ChromaDB and retrieved to ground the triage answer. It sits behind a `RAG_ENABLED` flag and falls back to the old deterministic triage if retrieval fails. There's a circuit breaker so a broken vector store doesn't take the chat down, and retrieval is filtered by clinic.
+- **`main`**: the chat rebuilt as a single tool-calling agent on Groq, with RAG as one tool next to doctor lookup, availability and booking. Changes to appointments go through a propose-then-confirm step (the commit calls them write gates), and the deterministic emergency detection stayed.
 
-**Seed data is a first-class feature for demos.** A blank database kills a hackathon demo. I should have written the seed script on day one, not day three.
+<!-- IMAGE: ./images/three-versions.png — Simple diagram of the three versions: baseline (rules + Groq NLU), rag (adds ChromaDB retrieval), main/agentic (tool-calling agent with RAG as a tool). Place it right after this list; a picture makes the branch structure much easier to hold in your head. -->
 
-**Docker layer caching is worth five minutes of thought.** Five minutes understanding `COPY requirements.txt` before `COPY .` saved us hours of waiting.
+So the line I wrote at first, that triage is entirely rule-based, is only true of the first version.
 
-**In-memory state is fine for an MVP.** We shipped. Persisting chat sessions to Redis is a post-hackathon problem.
+I should be clear about what I've verified here: the branches and the README describe these three designs, and the history shows the agentic rebuild, but I haven't benchmarked one against another, so I can't say how much better the agent is.
+
+### Bugs the agent version brought
+
+**Booking the wrong doctor.** A regression test in the repo describes it: a patient has a historical preferred doctor, the assistant recommends a different one in this conversation, the patient says "yes", and the booking should go to the recommended doctor. The fix relabelled the historical one as "past preferred doctor (reference only)" in the prompt and started tracking the doctor selected in this session separately, adding an "active doctor selected for booking" line. My reading is that the old preference was simply too prominent for the model.
+
+**Groq 413 on long conversations.** Long chats started failing with a payload-too-large error. Changes tried in one commit: history cut from 20 to 10 messages, UI-only data stripped from tool results before they go back to the model, slot lists trimmed to a few samples, symptom strings truncated, and a duplicated block removed from the patient context. The commit message says it wasn't fully resolved, and I haven't re-checked whether it is now.
+
+**Model change.** On Sept 3 the Groq model was switched to `openai/gpt-oss-120b`.
+
+**Urdu / RTL layout.** This one took more than one go: the history has the RTL change reverted and then that revert reverted.
 
 ---
 
-## Screenshots
+## What I learned
 
-![Patient login page](./images/patient-login.png)
-![AI chat — symptom triage in action](./images/chat-booking-flow.png)
-![Booking confirmed — patient dashboard](./images/booking-confirmed.png)
-![Admin dashboard](./images/admin-dashboard.png)
-![Doctor dashboard](./images/doctor-dashboard.png)
-![Emergency detection response](./images/emergency-detection.png)
-![System architecture](./images/architecture.png)
+**Split services by responsibility early.** With clean REST contracts and Pydantic schemas, three people could work in parallel, and we had no major integration bugs when we merged.
+
+**For the first version, rules for routing and an LLM for understanding was more predictable than LLM-only.** We moved past that later, but the deterministic emergency check stayed for the same reason: some decisions shouldn't depend on a model.
+
+**Tool results are prompt too.** The 413 fixes were all about sending the model less. What you return from a tool counts against the same context as everything else.
+
+**Seed data is a feature for demos.** I should have written the seed script on day one, not day three.
+
+**Docker layer ordering is worth five minutes of thought.**
+
+**In-memory state is fine for an MVP** and painful the moment you restart containers a lot.
 
 ---
 
-## Repo & Demo
+## What's not done
+
+Per the README the project is web-first (no native mobile), English-primary with Urdu/English support planned, and conversation sessions still live in memory and reset when the AI service restarts. WhatsApp reminders aren't implemented because they need WhatsApp Business API approval, and there's no payment gateway.
+
+---
+
+## Repo
 
 | Link | Description |
 |------|-------------|
-| [GitHub — MediBook AI](https://github.com/Mzaq1559/MEDIBOOK_AI) | Full source — backend, frontend, AI service, Docker |
-| [Alibaba Cloud Hackathon Pakistan 2026](https://github.com/Mzaq1559/MEDIBOOK_AI) | Event page |
+| [GitHub: MediBook AI](https://github.com/Mzaq1559/MEDIBOOK_AI) | Backend, frontend, AI service and Docker. `main` is the agentic version; `baseline` and `rag` are the earlier ones. |
 
-**Demo credentials (local setup):**
-
-| Role | Email | Password |
-|------|-------|----------|
-| Patient | `ali.khan@example.com` | `BulkSeed123!` |
-| Doctor | `ahmed.khan@primecare.pk` | `BulkSeed123!` |
-| Admin | `admin@medibook.com` | `Admin@123` |
-
----
-
-## What's Next
-
-Post-hackathon priorities if we keep building this:
-
-1. WhatsApp reminders — needs WhatsApp Business API approval, which takes time
-2. Persist chat sessions to Redis so container restarts don't break conversations
-3. Urdu/English bilingual NLU — the patients who need this most often communicate in Urdu
-4. Multi-clinic admin panel — the current admin view is single-clinic
-
-The core architecture holds for all of these. The hard part of the hackathon was building a working foundation fast. That part is done.
+Seeded demo accounts for a local setup are listed in the repo README.

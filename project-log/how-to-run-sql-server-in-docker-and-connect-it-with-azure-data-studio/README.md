@@ -20,19 +20,19 @@ This post is basically my lab notes from that session — spin up the container,
 First, start a SQL Server container using Docker.
 
 ```bash
-docker run -e "ACCEPT_EULA=Y"\
--e "MSSQL_SA_PASSWORD=Password123@"   
--p 1433:1433 
---name mssql-server   
--d mcr.microsoft.com/mssql/server:2022-latest
+docker run -e "ACCEPT_EULA=Y" \
+  -e "MSSQL_SA_PASSWORD=Password123@" \
+  -p 1433:1433 \
+  --name mssql-server \
+  -d mcr.microsoft.com/mssql/server:2022-latest
 ```
 
 ### Explanation
 
 - `ACCEPT_EULA=Y` → Accepts the Microsoft SQL Server license agreement.
-- `SA_PASSWORD` → Sets the password for the `sa` (system administrator) account.
+- `MSSQL_SA_PASSWORD` → Sets the password for the `sa` (system administrator) account. SQL Server enforces password complexity, so a weak password makes the container exit right after starting.
 - `-p 1433:1433` → Exposes SQL Server's default port to your local machine.
-- `--name sqlserver` → Names the container.
+- `--name mssql-server` → Names the container.
 - `-d` → Runs the container in detached mode.
 - `mcr.microsoft.com/mssql/server:2022-latest` → Official SQL Server Docker image.
 
@@ -77,7 +77,7 @@ I went with Azure Data Studio over SSMS mostly because it's cross-platform and I
 
 ---
 
-# SQL Tasks
+## SQL Tasks
 
 Below are a series of tasks performed on the **Students table** to demonstrate SQL operations. This was mostly about getting comfortable with basic DDL/DML before touching anything more complex — the kind of thing you need to be fast at before a real schema (with foreign keys, constraints, joins) stops feeling intimidating.
 
@@ -239,5 +239,3 @@ ORDER BY Age DESC;
 In this exercise, we deployed **SQL Server using Docker**, connected it through **Azure Data Studio**, and performed several SQL operations including table creation, data insertion, querying, updating, deleting, and sorting records.
 
 Nothing here was hard, exactly, but it was the first time I'd set up a database from a blank container myself instead of connecting to something a lab environment already had running for me. That distinction mattered more than it sounds — the next time I needed SQL Server in Docker (for a full-stack DBMS project with a real backend on top of it), none of this setup was unfamiliar anymore.
-
-![cover.png](./images/cover.png)
