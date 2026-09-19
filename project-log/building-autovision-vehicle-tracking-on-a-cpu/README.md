@@ -12,7 +12,7 @@ cover: ./images/cover.png
 
 ## What I wanted to build
 
-I wanted to see how far I could get with a traffic video, YOLO and no GPU: detect vehicles, follow each one across frames, estimate its speed, count what crosses a line, and show it all live in a dashboard. The stack is Ultralytics YOLOv8 (the small `yolov8n.pt` weights) with ByteTrack through `model.track()`, OpenCV for frames, and Streamlit + Plotly for the UI.
+I wanted to see how far I could get with a traffic video, YOLO and no GPU: detect vehicles, follow each one across frames, estimate its speed, count them, and show it all live in a dashboard. The stack is Ultralytics YOLOv8 (the small `yolov8n.pt` weights) with ByteTrack through `model.track()`, OpenCV for frames, and Streamlit + Plotly for the UI.
 
 The pipeline is deliberately boring:
 
@@ -42,14 +42,17 @@ The fix was the obvious one: work out a target interval from the video's FPS (`1
 
 The next day's performance commit deletes that pacing logic again. I don't have a note on the reasoning, so I'll describe what the diff shows instead of pretending I remember it.
 
-The important change is in how time is measured. Speed was being computed from wall-clock time (`time.time()`). If processing is slower than the video, the wall-clock gap between two frames is longer than the gap that actually existed in the video, so a car looks slower than it was. The commit message calls it speed-estimation drift when processing is slower than real time. The fix was to pass a `video_timestamp` (frame number divided by FPS) down into the tracker and analytics, so the speed maths uses video time and doesn't care how fast the CPU is.
+The important change is in how time is measured. Speed was being computed from wall-clock time (`time.time()`). If processing is slower than the video, the wall-clock gap between two frames is longer than the gap that actually existed in the video, so a car looks slower than it was. The commit message calls it speed-estimation drift when processing is slower than real time. The fix was to pass a video timestamp (`frame_index / fps`) down into the tracker and analytics, so the speed maths uses video time and doesn't care how fast the CPU is. The staleness check that decides which tracks are still "active" moved to video time as well.
 
 The same commit went after everything else that made the UI heavy:
 
-- UI updates only every N frames instead of every frame (`ui_update_interval`)
-- a `frame_skip` option and a `processing_width` setting; the downscale width went from 1280 to 960
-- one frame copy in the renderer instead of several redundant ones
-- sidebar controls for those settings and a small diagnostics banner
+- metrics, the vehicle table and a diagnostics line refresh every N processed frames (`ui_update_interval`, default 5), while the annotated video frame still updates on every processed frame
+- a `frame_skip` option and a separate inference width (`processing_width`), so YOLO can run on a smaller copy of the frame than the one displayed
+- the display width cap dropped from 1280 to 960 as a CPU-friendly default
+- redundant frame copies in the renderer cleaned up
+- sidebar controls for all of it. The config file warns that skipping too many frames can make ByteTrack lose IDs, so `frame_skip` defaults to 0.
+
+The diagnostics line shows processing FPS, processed and skipped frames and the source FPS, which is how I'd measure real throughput. The repo doesn't record any of those numbers.
 
 So the sleep was a fix for how the video *looked*. The timestamp change was the fix for what the numbers *meant*. Those turned out to be two separate problems that I'd first treated as one.
 
@@ -59,7 +62,7 @@ So the sleep was a fix for how the video *looked*. The timestamp change was the 
 
 A large commit with the message "modified" (not a great message, I know) fixed several things that only show up once you actually watch the dashboard for a while:
 
-- **Counting.** The total and per-type counts only went up when a vehicle crossed the line. They now increase when a track is first created, and a test covers it. The README still describes line-crossing counting, so it's out of date here.
+- **Counting.** `total_counted` and the per-type counts now go up when a track is first created. The line-crossing check still runs, but it only sets `counted` and `crossed_zone` flags on the track, so the counting line no longer changes the total. The README still describes line-crossing counting, so it's out of date here.
 - **State leaking between runs.** Analytics and the per-track speed estimators are now reset at the start of each run, each run gets a `processing_run_id`, and a timestamp that goes backwards (a restarted video) clears a track's history. This is the Streamlit rerun problem in practice: state that survives when you don't want it to.
 - **Calibration after resizing.** The frames are downscaled for display, but the calibration points were in the original resolution. The code now rescales the reference points to the resolution being processed, with a test (1920×1080 down to 960×540 doubles meters-per-pixel).
 - **Impossible speeds.** Speeds above 250 km/h, or measured over a gap longer than 1.5 seconds, are thrown away. I'd guess this is mostly ID switches (a new track picking up a different car), but I haven't verified that.
@@ -70,9 +73,9 @@ A large commit with the message "modified" (not a great message, I know) fixed s
 
 ## The last commit
 
-The most recent commit is titled "Removing Vehicle Trajectory Lines", but the diff is mostly a new Accuracy/Demo processing mode. As far as I can tell from the code, Demo mode runs the model only every few frames and, in between, redraws the last boxes with interpolated positions so the video looks smooth, and analytics update only on frames where inference actually ran. It also caps thread counts. Accuracy mode is the one that puts every frame through the model.
+The most recent commit is titled "Removing Vehicle Trajectory Lines", but the diff is mostly a new Accuracy/Demo processing mode (trajectories are now a sidebar checkbox that defaults to off). In Demo mode the model runs only every N source frames (`inference_interval`), and in between the app redraws the last boxes at interpolated positions so the video looks smooth. Those interpolated boxes are display-only: the code says they're never written back into tracking, speed or counting. Demo mode also caps the thread counts so the machine stays responsive. In Accuracy mode every processed frame goes through the model.
 
-<!-- IMAGE: ./images/performance-controls.png — Screenshot of the sidebar performance settings (processing width, frame skip / inference interval, Demo vs Accuracy mode) with the diagnostics banner visible. Place it after this section; it shows the knobs the whole story led to. -->
+<!-- IMAGE: ./images/performance-controls.png — Screenshot of the sidebar performance settings (processing mode, inference width, inference interval, UI update interval, frame skip) with the diagnostics line visible under the video. Place it after this section; it shows the knobs the whole story led to. -->
 
 ---
 
@@ -80,6 +83,7 @@ The most recent commit is titled "Removing Vehicle Trajectory Lines", but the di
 
 - I haven't measured throughput. The README's "5–15 FPS on CPU" is explicitly an estimate, not a benchmark, and the repo has no benchmark results or bundled screenshots.
 - The README is behind the code: it doesn't mention the video-timestamp change, the Demo/Accuracy modes or the new counting rule.
+- Some wall-clock time is still in there. The snapshots that feed the charts are stamped with `time.time()`, so the charts' time axis isn't video time, and the final UI refresh after the loop falls back to wall-clock time if the video timestamp isn't defined.
 - Speed is still a single-scale linear approximation. The README's own list of next steps starts with a proper perspective transform (homography), then data export, a headless CLI, and tests for the tracker and UI.
 
 <!-- IMAGE: ./images/tracking-result.png — A close crop of the annotated video showing several tracked vehicles with IDs, class labels and speed estimates, including one flagged as a violation (red box). Place it here as the concrete result of everything above. -->
