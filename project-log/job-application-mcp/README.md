@@ -584,6 +584,255 @@ And job-application-mcp has been giving me a practical way to learn that.
 
 ---
 
+## From “OAuth Implemented” to an Actually Deployed OAuth System
+
+The next part of the project was where the authentication work became real.
+
+I deployed the MCP server to **Azure Container Apps** and connected it to an **Auth0** tenant. The public MCP endpoint is:
+
+```text
+https://job-application-mcp.happygrass-de5f577c.centralindia.azurecontainerapps.io/mcp
+```
+
+The server now uses an OAuth 2.1-style resource-server flow:
+
+```text
+Claude Web
+    |
+    | OAuth authorization
+    v
+Auth0
+    |
+    | RS256 JWT access token
+    v
+job-application-mcp
+    |
+    v
+MCP tools
+```
+
+The server verifies the token's signature using Auth0's JWKS and checks the issuer, audience, expiry, and required `mcp:access` scope.
+
+That was a useful distinction for me: authentication wasn't just a login screen. The MCP server itself has to verify that the token was actually issued for the resource it is protecting.
+
+---
+
+## Azure CI/CD Was Another Layer I Hadn't Worked With Before
+
+Once the application was containerized, I wanted a push to `main` to mean more than "the code is on GitHub."
+
+The GitHub Actions workflow now does this:
+
+```text
+push to main
+    ↓
+Ruff lint + format check
+    ↓
+pytest
+    ↓
+Docker build
+    ↓
+Azure authentication through GitHub OIDC
+    ↓
+push image to Azure Container Registry
+    ↓
+update Azure Container App
+    ↓
+verify deployed image
+    ↓
+health check
+```
+
+The important part is that GitHub does **not** need a long-lived Azure password stored as a repository secret.
+
+GitHub presents an OIDC identity token, and Azure checks whether that token matches a configured federated identity credential.
+
+That sounded like a very high-level cloud concept when I first encountered it.
+
+Then it broke.
+
+---
+
+## The Azure OIDC Failure
+
+The first deployment attempt passed linting and tests but failed at `azure/login@v2`.
+
+The error was:
+
+```text
+AADSTS700213:
+No matching federated identity record found for presented assertion subject
+```
+
+Instead of changing random configuration values, I compared what GitHub was actually presenting with what Azure had been configured to trust.
+
+GitHub was presenting this subject:
+
+```text
+repo:Mzaq1559@187723922/job-application-mcp@1381506495:ref:refs/heads/main
+```
+
+while Azure still had the older subject:
+
+```text
+repo:Mzaq1559/job-application-mcp:ref:refs/heads/main
+```
+
+So the first problem was a subject mismatch.
+
+I updated the federated credential to the exact subject GitHub was presenting.
+
+The next CI run failed again, but this time the error changed:
+
+```text
+AADSTS700211:
+No matching federated identity record found for presented assertion issuer
+```
+
+That second error was actually useful.
+
+The subject now matched, but the issuer didn't.
+
+Azure had:
+
+```text
+https://token.actions.githubusercontent.com/
+```
+
+while GitHub's assertion contained:
+
+```text
+https://token.actions.githubusercontent.com
+```
+
+The trailing slash was the difference.
+
+I updated the Azure federated credential again, verified the issuer/subject/audience values, and reran the workflow.
+
+This time the deployment succeeded.
+
+That was probably the clearest cloud debugging lesson from this project so far: **when authentication fails, inspect the actual claims and compare them to the trust configuration instead of guessing.**
+
+---
+
+## The Interesting Part: The MCP Server Isn't Actually Claude-Specific
+
+While working through the Claude connection, I also realized something important about the architecture.
+
+The server is an **MCP server**, not a "Claude API server."
+
+The architecture is closer to:
+
+```text
+                 ┌───────────────┐
+                 │ MCP Server    │
+                 │               │
+                 │ Job tools     │
+                 │ Profile       │
+                 │ Resumes       │
+                 │ Applications  │
+                 └───────┬───────┘
+                         │
+                MCP over HTTP
+                         │
+          ┌──────────────┼──────────────┐
+          │              │              │
+       Claude        another MCP      my own
+         Web           client         AI agent
+```
+
+The model and the tool server are separate layers.
+
+Claude Web is the first client I'm connecting to because its remote custom-connector support makes the workflow practical, but the underlying server is designed around the MCP protocol rather than around a Claude-only API.
+
+That changes how I think about the project.
+
+I'm not building one giant application that happens to call an LLM.
+
+I'm building a tool layer that an AI client can consume.
+
+---
+
+## Connecting Claude Web
+
+The final step is to add the public MCP endpoint as a custom connector in Claude.
+
+Anthropic's current documentation says custom remote MCP connectors can be added from **Customize → Connectors → Add custom connector**. The connector can optionally receive an OAuth Client ID and Client Secret in Advanced settings.
+
+For this project, the flow is:
+
+```text
+Claude
+  ↓
+Customize → Connectors
+  ↓
+Add custom connector
+  ↓
+https://job-application-mcp.happygrass-de5f577c.centralindia.azurecontainerapps.io/mcp
+  ↓
+Auth0 login / consent
+  ↓
+Connector enabled
+  ↓
+Claude can call the MCP tools
+```
+
+The important security detail is that the Auth0 Client Secret is configuration, not application source code. It should never be committed to Git or pasted into chat.
+
+Once connected, the first useful test is deliberately simple:
+
+> "Show my profile summary."
+
+Then I can test the actual application workflow with prompts such as:
+
+> "Here's a job description. Save it and analyze my match."
+
+and:
+
+> "I submitted this application. Mark it as applied."
+
+The second operation doesn't submit anything to an external job platform. It records the fact that I told the system I submitted it.
+
+---
+
+## What This Stage Taught Me
+
+At this point the project has crossed several layers that I didn't fully understand when I started:
+
+- MCP protocol design
+- remote Streamable HTTP
+- OAuth resource-server authentication
+- Auth0
+- JWT/JWKS verification
+- Docker
+- Azure Container Apps
+- Azure Container Registry
+- GitHub Actions
+- GitHub OIDC
+- Azure federated credentials
+- CI/CD debugging
+- Claude remote connectors
+
+I definitely don't have all of these concepts memorized.
+
+What I do have now is a real system where these concepts interact.
+
+That is more useful to me than memorizing definitions in isolation.
+
+The Azure OIDC failure in particular was a good reminder that infrastructure errors often look intimidating because the terminology is unfamiliar. Once I reduced the problem to:
+
+```text
+What did GitHub send?
+What did Azure expect?
+Are issuer, subject, and audience identical?
+```
+
+the problem became much smaller.
+
+That's the kind of debugging habit I want to keep developing.
+
+---
+
 ## Still Building
 
 This isn't the final version of the project.
