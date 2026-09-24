@@ -3,7 +3,8 @@ title: Building job-application-mcp — Turning a Job Application Project into a
 slug: job-application-mcp
 date: 2026-09-24
 excerpt: A detailed development log of building job-application-mcp, from MCP and AI-tool integration to OAuth 2.1, Claude Web, GitHub workflows, CI failures, and learning how to debug AI-assisted code properly.
-tags: [MCP, AI, Automation, Claude, OAuth, GitHub, Python, CI/CD, Developer Tools]
+tags:
+  [MCP, AI, Automation, Claude, OAuth, GitHub, Python, CI/CD, Developer Tools]
 category: Project Log
 cover: ./images/cover.png
 ---
@@ -12,7 +13,7 @@ cover: ./images/cover.png
 
 **Project:** [job-application-mcp](https://github.com/Mzaq1559/job-application-mcp)
 
-> *Cover image: Repository screenshot*
+> _Cover image: Repository screenshot_
 
 This project started from a simple idea: instead of having a collection of separate scripts and utilities around job applications, I wanted to build something that an AI assistant could actually interact with through structured tools.
 
@@ -34,7 +35,7 @@ Instead of the model needing to understand every implementation detail, the MCP 
 
 Conceptually, the separation looked like this:
 
-~~~text
+```text
 AI Assistant
      |
      v
@@ -45,7 +46,7 @@ job-application-mcp
      |
      v
 Application Logic / External Services
-~~~
+```
 
 That made the project interesting for two reasons.
 
@@ -170,7 +171,7 @@ The feature ended up as a pull request:
 
 That gave me a chance to work through a more realistic feature-development workflow:
 
-~~~text
+```text
 feature work
     ↓
 branch
@@ -188,7 +189,7 @@ run checks again
 review the result
     ↓
 merge
-~~~
+```
 
 It sounds simple when written down.
 
@@ -202,9 +203,9 @@ The most frustrating part of the recent work was a GitHub Actions workflow faili
 
 The workflow was running:
 
-~~~text
+```text
 ruff check .
-~~~
+```
 
 and the job failed.
 
@@ -226,7 +227,7 @@ There is a big difference between these two approaches.
 
 ### Approach 1
 
-~~~text
+```text
 CI fails
 ↓
 change the code
@@ -238,11 +239,11 @@ another failure
 change more code
 ↓
 repeat
-~~~
+```
 
 ### Approach 2
 
-~~~text
+```text
 CI fails
 ↓
 read the complete output
@@ -258,7 +259,7 @@ make the smallest useful change
 verify locally
 ↓
 verify in CI
-~~~
+```
 
 The first approach can make progress quickly when the problem is obvious.
 
@@ -314,7 +315,7 @@ If the first diagnosis was wrong, the repository can become harder to reason abo
 
 That creates a loop like:
 
-~~~text
+```text
 failure
   ↓
 AI changes code
@@ -326,7 +327,7 @@ AI changes more code
 more complexity
   ↓
 harder debugging
-~~~
+```
 
 This project made me more careful about that.
 
@@ -359,13 +360,13 @@ The project also gave me more practical experience with a workflow that resemble
 
 Instead of:
 
-~~~text
+```text
 change code → push → hope
-~~~
+```
 
 the process became:
 
-~~~text
+```text
 make a focused change
        ↓
 create/update a branch
@@ -385,7 +386,7 @@ run checks again
 review the result
        ↓
 merge
-~~~
+```
 
 The important part isn't the diagram.
 
