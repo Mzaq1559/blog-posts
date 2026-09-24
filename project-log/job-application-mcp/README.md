@@ -852,3 +852,356 @@ And this time, the thing I'm building sits right at the intersection of **AI, au
 I'll come back to this post as the project evolves and add what I learn next.
 
 More updates as I break it, fix it, and figure out what I'm actually doing.
+
+
+---
+
+## Debugging the Claude Web Connection
+
+After getting the OAuth deployment in place, the next problem was no longer "can the server authenticate?" It was:
+
+> **Why can Claude authorize successfully but still fail to connect to the MCP server?**
+
+This turned into the most involved debugging session of the project so far.
+
+The important thing was to stop treating every Claude error as an authentication problem.
+
+Claude showed a sequence of connection stages such as:
+
+~~~text
+Checking the server
+        ↓
+Looking up sign-in settings
+        ↓
+Checking the sign-in provider
+~~~
+
+At one point Claude was able to reach the OAuth flow, and the UI explicitly reported:
+
+> "Your account was authorized, but Job Application MCP returned an error when connecting."
+
+That distinction mattered.
+
+OAuth authorization had succeeded, but the subsequent MCP connection was still failing.
+
+---
+
+## First Real Server-Side Root Cause: HTTP 421
+
+I went into Azure Log Analytics instead of continuing to guess from Claude's generic error message.
+
+The logs showed requests like:
+
+~~~text
+POST /mcp HTTP/1.1 421 Misdirected Request
+~~~
+
+and, more importantly:
+
+~~~text
+Invalid Host header:
+job-application-mcp.happygrass-de5f577c5.centralindia.azurecontainerapps.io
+~~~
+
+This was the first concrete root cause I found.
+
+The failure was happening inside the MCP HTTP transport's host validation rather than inside Auth0 token verification.
+
+The MCP Python SDK's Streamable HTTP transport includes DNS rebinding protection by default. That protection validates the incoming Host header, which is useful locally but needs to be configured appropriately for a deployed service with a real hostname.
+
+That led me to investigate the SDK implementation rather than blindly changing the application.
+
+---
+
+## Testing the Transport Fix
+
+I tried configuring TransportSecuritySettings for the deployed hostname.
+
+The first attempt immediately failed CI because I had added the class without importing it:
+
+~~~text
+F821 undefined name 'TransportSecuritySettings'
+~~~
+
+I fixed the missing import.
+
+The next CI run then failed Ruff's import-order check:
+
+~~~text
+I001
+~~~
+
+So I corrected the import ordering and got the workflow clean.
+
+However, Claude still couldn't connect.
+
+That was important evidence: **fixing a real server-side problem did not necessarily fix the entire connection problem.**
+
+I then inspected the deployed SDK itself rather than assuming my understanding of the installed version was correct.
+
+The SDK showed:
+
+~~~python
+class TransportSecuritySettings(BaseModel):
+    enable_dns_rebinding_protection: bool = True
+    allowed_hosts: list[str] = Field(default_factory=list)
+    allowed_origins: list[str] = Field(default_factory=list)
+~~~
+
+and the Streamable HTTP transport passed those settings into its security middleware.
+
+That confirmed that the 421 behavior was actually coming from the SDK's transport security layer.
+
+---
+
+## More Transport Experiments
+
+I then tested disabling DNS rebinding protection explicitly:
+
+~~~python
+transport_security = TransportSecuritySettings(
+    enable_dns_rebinding_protection=False,
+)
+~~~
+
+and passed that into the Streamable HTTP application.
+
+I also tested changing the transport configuration from the original stateless JSON-response mode to the standard stateful Streamable HTTP/SSE behavior.
+
+Neither experiment produced a working Claude connection.
+
+I also pinned the MCP dependency to:
+
+~~~text
+mcp==2.2.0
+~~~
+
+so that the deployed environment would not silently move between SDK versions.
+
+Again, Claude still returned a generic connection failure.
+
+At that point, continuing to make transport changes without new evidence would have been exactly the kind of blind debugging I had been trying to avoid.
+
+---
+
+## Verifying the Public Endpoint Independently
+
+I went back to fundamentals and tested the deployed service directly.
+
+Requesting:
+
+~~~text
+/mcp
+~~~
+
+without credentials returned:
+
+~~~text
+HTTP 401
+~~~
+
+with the expected protected-resource metadata reference.
+
+Then I requested:
+
+~~~text
+/.well-known/oauth-protected-resource/mcp
+~~~
+
+and received:
+
+~~~json
+{
+  "resource": "https://job-application-mcp.happygrass-de5f577c5.centralindia.azurecontainerapps.io/mcp",
+  "authorization_servers": [
+    "https://dev-kuqahsd5izwnclgq.us.auth0.com/"
+  ],
+  "scopes_supported": [
+    "mcp:access"
+  ],
+  "bearer_methods_supported": [
+    "header"
+  ]
+}
+~~~
+
+That was useful because it verified several things independently of Claude:
+
+- the public DNS name worked
+- Azure Container Apps was reachable
+- the MCP endpoint existed
+- protected-resource metadata was being served
+- Auth0 was correctly advertised as the authorization server
+- the required mcp:access scope was advertised
+
+I also verified Auth0's OpenID Connect discovery endpoint was reachable.
+
+This narrowed the problem considerably.
+
+---
+
+## The Important Lesson: Don't Confuse OAuth With MCP Connection
+
+The debugging showed me that there are several separate stages:
+
+~~~text
+Claude discovers MCP endpoint
+        ↓
+Protected Resource Metadata
+        ↓
+OAuth authorization server discovery
+        ↓
+User authorization
+        ↓
+Access token
+        ↓
+Authenticated MCP request
+        ↓
+MCP session / tool discovery
+~~~
+
+A successful step does not prove that every later step is working.
+
+In my case, Claude was getting far enough through the OAuth process to authorize the account, while the final MCP connection was still failing.
+
+That is why the generic Claude message was not enough to identify the problem.
+
+---
+
+## Reverting Instead of Accumulating More Changes
+
+After several transport experiments, I made a deliberate decision to stop modifying the working baseline.
+
+The last known-working implementation was commit:
+
+~~~text
+26006eb040fe43ba2e4fc8c8d45e88fe0a6b1da6
+~~~
+
+I restored main to that exact commit.
+
+I also closed the diagnostic transport experiment rather than leaving experimental changes around just because they had already been made.
+
+This was an important engineering decision for me.
+
+A debugging branch should not become the new production state simply because a lot of work has already been invested in it.
+
+The repository is now back on the known baseline while the remaining Claude Web connection issue is investigated separately.
+
+---
+
+## What I Actually Know Now
+
+After this debugging session, I can separate the confirmed facts from the assumptions.
+
+### Confirmed
+
+- The MCP server is deployed on Azure Container Apps.
+- The public MCP endpoint is reachable.
+- Protected-resource metadata is available.
+- Auth0 discovery is available.
+- Auth0 authorization can succeed.
+- The server previously produced real HTTP 421 Host-header failures.
+- The MCP SDK's transport security was responsible for those 421 responses.
+- Multiple transport configuration experiments were deployed and tested.
+- The experiments did not produce a working Claude connection.
+- The main branch was restored to the known baseline commit.
+
+### Not yet proven
+
+I have not yet proven exactly why Claude's backend still fails the final MCP connection after successful authorization.
+
+That distinction is important.
+
+I don't want to write:
+
+> "I fixed the OAuth problem."
+
+because the evidence doesn't support that.
+
+The evidence says that authentication infrastructure is functioning far enough for authorization to complete, while the end-to-end Claude → MCP connection still has an unresolved problem.
+
+---
+
+## Another Lesson From This
+
+This was probably the best example so far of why debugging needs evidence.
+
+I found a genuine bug:
+
+~~~text
+Invalid Host header → 421
+~~~
+
+It was tempting to treat that as *the* answer.
+
+But after fixing and testing it, Claude still failed.
+
+So the correct conclusion wasn't:
+
+> "The fix didn't work, therefore the diagnosis was useless."
+
+The correct conclusion was:
+
+> "That was a real problem, but it wasn't the only remaining problem."
+
+That is a much better debugging mindset.
+
+Real systems can have multiple independent failures hidden behind one generic error message.
+
+---
+
+## Where I Left It
+
+For now, I'm intentionally leaving the repository on the known-working OAuth baseline rather than accumulating speculative transport changes.
+
+The next investigation can start from a clean state and focus specifically on the remaining post-authorization Claude Web connection behavior.
+
+This also gives me a clean comparison point:
+
+~~~text
+Known baseline
+26006eb
+     ↓
+controlled experiment
+     ↓
+observe exact behavior
+     ↓
+keep or revert based on evidence
+~~~
+
+That is a much healthier workflow than continuously stacking fixes on top of previous experiments.
+
+---
+
+## Current Status
+
+The project has reached a point where the interesting part isn't just adding another feature.
+
+It is understanding how all of these systems interact:
+
+~~~text
+GitHub
+   ↓
+GitHub Actions
+   ↓
+Docker
+   ↓
+Azure Container Apps
+   ↓
+MCP Streamable HTTP
+   ↓
+OAuth 2.1
+   ↓
+Auth0
+   ↓
+Claude Web
+~~~
+
+Every layer can work independently while the complete chain still fails.
+
+That's exactly the kind of engineering problem I wanted this project to expose me to.
+
+The Claude Web connection issue is not completely resolved yet, but the debugging process has already taught me something valuable: **when a system crosses multiple services, isolate each boundary, collect evidence at that boundary, and don't confuse a real intermediate fix with a complete solution.**
+
+The investigation is continuing from the clean baseline.
