@@ -300,4 +300,31 @@ Now I need to write another post. ☕
 
 ---
 
-*Built in a 1-week sprint with React, TypeScript, Vite, and the GitHub API. The irony? This article was written in the editor I built. Inception.*
+## Update — September 2026: Letting Claude Fill the CMS It Was Built To Feed
+
+Six months after the original sprint, the CMS itself hasn't needed more work — it's still just the editor described above, committing Markdown straight to this repo. What changed was how the *content* gets into it.
+
+I sat down with Claude, connected to GitHub through its MCP integration, and asked it to do two things: first, build a complete inventory of every project I'd built that could become a diary post, based on whatever project memory it had; then, actually go create the posts directly in this repo — not draft them in chat for me to copy over.
+
+That second part is the interesting bit for a post about the CMS itself. The whole point of this CMS, back in March, was "one-click publish that commits to GitHub." This was the same idea taken further: Claude didn't use my editor's UI at all. It used GitHub's API directly — the same `createOrUpdateFileContents` operation my own `GitHubService.publishPost` wraps — to read the repo structure, read several existing posts to learn the frontmatter and tone conventions, then write new `README.md` files straight into `project-log/` folders it created itself, commit by commit.
+
+### What it actually did
+
+Across two sessions, it:
+
+- Read through my project memory for a first pass at what might be worth writing about, then read the actual posts already in this repo so it wouldn't duplicate stories that already existed.
+- Went a level deeper than memory on request: pulling real commit histories, diffs, and even deployed API responses from repos like `job-application-mcp`, `SiteFlowAI`, and `docvision-ai`, rather than working from vague recollections of what happened.
+- Found real bugs and decisions I hadn't put in memory at all — a 307 redirect from a Starlette `Mount`, an Android foreground-service type requirement, a license change from MIT to source-available — and wrote them up with the actual diffs as evidence, distinguishing clearly between what the commit history confirmed and what it couldn't verify.
+- Made a real mistake and fixed it in the same session: while updating this repo's own `README.md` to list the new posts, it accidentally pushed a placeholder character over the entire file instead of the real content, then caught it on the very next tool call and restored it in full.
+
+### Why this is actually a CMS story, not just a content story
+
+The March sprint's whole thesis was "Git is already a perfect CMS" — every post is a commit, every change has history, and you don't need to rebuild what already exists. Having an AI assistant publish directly through the same API surface my hand-built `GitHubService` uses is a pretty direct extension of that idea: the CMS was never really "my editor," it was "the GitHub API plus a folder convention." Anything that can talk to that API — my React app, or an AI agent with repo access — can publish to it the same way. I didn't design for that specifically back in March, but it turns out to have been the natural consequence of choosing Git-as-backend in the first place.
+
+### What I'd flag if I were reviewing this for someone else
+
+I haven't yet gone through the resulting posts and verified every technical claim against the source repos myself — I was trusting Claude's own distinction between "confirmed by a diff" and "reasonable reconstruction," which it applied consistently, but I haven't independently re-checked each one. And the accidental README overwrite, while caught immediately, is a good reminder that letting something write directly to a production repo — even a low-stakes one like a personal blog's content — means a mistake lands in the actual commit history rather than staying in a draft I'd have reviewed first.
+
+---
+
+*Built in a 1-week sprint with React, TypeScript, Vite, and the GitHub API. The irony? This article was written in the editor I built. Inception. Six months later, the newest posts in this repo were written by an AI that never touched that editor at all.*
