@@ -1,3 +1,13 @@
+---
+title: "Running Claude Code Through OmniRoute with Gemini 3.8 Flash"
+slug: claude-code-omniroute-gemini
+date: 2026-09-25
+tags: [Claude Code, OmniRoute, Gemini, AI, Developer Tools, LLM, Project Log]
+category: Project Log
+excerpt: "A developer log of setting up Claude Code through OmniRoute, connecting Gemini 3.8 Flash as the underlying model, debugging the setup, and verifying that requests were actually being routed through the local gateway."
+cover: ./images/cover.png
+---
+
 # Running Claude Code Through OmniRoute with Gemini 3.8 Flash
 
 I wanted to experiment with Claude Code, but I didn't want to simply install an agent and let it generate everything for me.
