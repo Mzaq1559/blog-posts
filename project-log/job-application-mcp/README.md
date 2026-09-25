@@ -1205,3 +1205,112 @@ That's exactly the kind of engineering problem I wanted this project to expose m
 The Claude Web connection issue is not completely resolved yet, but the debugging process has already taught me something valuable: **when a system crosses multiple services, isolate each boundary, collect evidence at that boundary, and don't confuse a real intermediate fix with a complete solution.**
 
 The investigation is continuing from the clean baseline.
+
+
+---
+
+## What This Project Is Teaching Me About My Own Development
+
+There is another lesson I have started noticing while working on this project.
+
+I have been moving across a lot of areas during my degree: web development, .NET, Python, AI/ML, computer vision, RAG, agents, MCP, cloud deployment, and research-oriented work. That breadth has helped me discover what I enjoy, but it also creates an easy trap: learning the vocabulary of many technologies without developing enough depth in any of them.
+
+This project has made that problem more obvious to me.
+
+I can ask an AI assistant to generate an implementation very quickly. I can get a complicated-looking system running much faster than I could have a year ago. But if I cannot explain why the implementation works, reproduce the problem when it breaks, or change the code without the assistant doing all the reasoning for me, then I have built something without fully building the underlying skill.
+
+That is something I want to change.
+
+### Using AI Without Outsourcing the Learning
+
+AI coding assistants are extremely useful in this project. They help me explore unfamiliar APIs, inspect errors, generate initial implementations, and move through repetitive work faster.
+
+But there is a difference between:
+
+> "The AI wrote code that works."
+
+and:
+
+> "I understand the code well enough to maintain, debug, and extend it."
+
+The second is the skill I actually want.
+
+So I am trying to become more deliberate about the role AI plays in my development. Instead of immediately asking for a complete solution, I want to spend more time reading the error, forming a hypothesis, inspecting the relevant code, and understanding the proposed change.
+
+The goal isn't to stop using AI.
+
+The goal is to make sure that **AI increases my capabilities instead of replacing them.**
+
+---
+
+## Breadth Is Useful, But Depth Has to Catch Up
+
+This project also made me think differently about the number of technologies I am trying to learn.
+
+Knowing a little about many areas is useful when building systems like this because the project crosses several boundaries. At the same time, I don't want my development to become a collection of shallow technologies on a CV.
+
+For me, the more useful long-term direction is to build strong fundamentals first and then develop genuine depth in the areas I want to specialize in.
+
+That means becoming comfortable enough with programming that basic Python and software-engineering decisions become automatic, while continuing to build depth around AI/ML and systems that use those technologies.
+
+The projects can still be broad.
+
+My understanding shouldn't be.
+
+---
+
+## Why I'm Keeping the Failures
+
+This is also why I am keeping the messy parts of this project log.
+
+The failed CI runs, incorrect assumptions, OAuth issues, Azure OIDC mismatch, HTTP 421 response, transport experiments, and eventual rollback are not just historical details.
+
+They show the difference between producing code and learning to engineer.
+
+The most useful part of the project may not be the final working configuration.
+
+It may be the gradual shift from:
+
+    "Make it work."
+
+    ↓
+
+    "Understand why it doesn't work."
+
+    ↓
+
+    "Test the hypothesis."
+
+    ↓
+
+    "Make the smallest useful change."
+
+    ↓
+
+    "Verify the result."
+
+That is the engineering habit I want to carry into my next projects.
+
+---
+
+## Still Building, But With a Different Goal
+
+I started this project because MCP was interesting.
+
+Now the project is becoming useful for a larger reason: it is forcing me to practice software engineering across multiple layers while also exposing the weaknesses in my own learning process.
+
+I still want to build more features.
+
+I still want to get the Claude Web connection fully working.
+
+I still want to learn more about MCP, OAuth, cloud deployment, AI systems, and automation.
+
+But I also want to come out of the project being able to build and debug more of the system **without needing an AI to do the thinking for me**.
+
+That is probably the more important milestone.
+
+The project is still unfinished.
+
+So am I.
+
+And that is exactly why I'm keeping the development log.
