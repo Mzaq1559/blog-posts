@@ -95,6 +95,11 @@ data behind the site's interactive **Roadmap** section.
 - Deploying SiteFlowAI to Azure
 - Redoing My Portfolio: Real Stats, Real Projects
 - Learning FastAPI by Building an Issue Tracker
+- job-application-mcp: Building the Tools, Then Hitting the First Deploy Blockers
+- job-application-mcp: OAuth, Azure, and the Claude Web Connection
+- From MIT to Source-Available: Licensing job-application-mcp for v1.0.0
+- Building DocVision AI: A Full CV Pipeline, Pair-Programmed in One Sitting
+- Go Assistant: An Android Overlay That Watches a Go Board and Talks to Claude Vision
 
 ## 🗺️ Roadmap section
 
