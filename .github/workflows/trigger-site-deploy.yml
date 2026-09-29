@@ -1,0 +1,21 @@
+name: Trigger Blog Deployment
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  notify-site:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger website rebuild
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.WEBSITE_REPO_PAT }}
+          script: |
+            await github.rest.repos.createDispatchEvent({
+              owner: 'Mzaq1559',
+              repo: 'Blog_Website-My-Learning-Diary',
+              event_type: 'posts-updated'
+            });
+            console.log('Triggered website rebuild for updated blog-posts.');
