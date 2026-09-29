@@ -11,7 +11,7 @@ jobs:
       - name: Trigger website rebuild
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.APP_REPO_PAT }}
+          github-token: ${{ secrets.WEBSITE_REPO_PAT }}
           script: |
             await github.rest.repos.createDispatchEvent({
               owner: 'Mzaq1559',
