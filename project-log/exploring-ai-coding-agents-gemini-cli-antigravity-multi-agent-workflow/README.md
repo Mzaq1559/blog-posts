@@ -2,7 +2,17 @@
 title: "Exploring AI Coding Agents — Gemini CLI, Antigravity, and My First Multi-Agent Workflow"
 slug: exploring-ai-coding-agents-gemini-cli-antigravity-multi-agent-workflow
 date: 2026-10-08
-tags: [AI, Gemini CLI, Antigravity, Multi-Agent Systems, Developer Tools, Claude Code, AAC, Project Log]
+tags:
+  [
+    AI,
+    Gemini CLI,
+    Antigravity,
+    Multi-Agent Systems,
+    Developer Tools,
+    Claude Code,
+    AAC,
+    Project Log,
+  ]
 category: Project Log
 excerpt: "A day of experimenting with AI coding agents — moving away from a laggy Claude Code setup through OmniRoute, exploring Gemini CLI's repository understanding, and setting up Antigravity Agent Core for parallel multi-agent work."
 cover: ./images/1.png
