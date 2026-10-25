@@ -34,7 +34,15 @@ The machine is CPU-only, so I chose the small 1.5B Qwen model to get started.
 
 ## 1. Install and start Ollama
 
-I first checked that Ollama's local API was reachable. Its default address is `http://127.0.0.1:11434`. The API can be checked with:
+I started with Ollama's Linux installation, initially trying the Snap package before switching to the standard Linux installation route. I also had to work around a download issue during setup, so I kept checking which binary was installed and whether the local service was responding.
+
+![Initial Ollama Snap installation attempt](./images/1.png)
+
+![Removing the Snap package and retrying the Ollama installation](./images/3.png)
+
+![Retrying the Ollama installation using HTTP/1.1](./images/4.png)
+
+Once the installation was in place, I checked that Ollama's local API was reachable. Its default address is `http://127.0.0.1:11434`. The API can be checked with:
 
 ```bash
 curl http://127.0.0.1:11434/api/version
