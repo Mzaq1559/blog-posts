@@ -223,6 +223,10 @@ The GitHub Actions workflow is designed to run this process on a schedule or thr
 
 I didn't want to test the scripts directly in my main checkout and risk leaving generated changes mixed with my ongoing work.
 
+Before that isolated test, I also checked the state of my main checkout and synchronized it with the remote using a fast-forward-only pull. I kept my existing backup stash untouched rather than applying it blindly.
+
+![Checking the stash and fast-forward synchronization of the main working tree](./images/7.png)
+
 So I used a temporary detached Git worktree.
 
 The commands were:
